@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/credit_check'
+require './lib/credit_card'
 
 class CreditCheckTest < Minitest::Test
 
@@ -92,6 +93,29 @@ class CreditCheckTest < Minitest::Test
     card = CreditCard.new("6011797668867828", 1000)
 
     assert card.is_valid?
+  end
+
+  def test_valid_american_express
+    card = CreditCard.new("342804633855673", 10000)
+    require "pry"; binding.pry
+    assert card.is_valid?
+  end
+
+  def test_checksum_works
+    card = CreditCard.new("342804633855673", 1000)
+    assert_equal 3, card.calculate_checksum
+  end
+
+  def test_invalid_number
+    card = CreditCard.new("4024007106512380", 0)
+
+    refute card.is_valid?
+  end
+
+  def test_invalid_amex
+    card = CreditCard.new("342801633855673", 0)
+
+    refute card.is_valid?
   end
 
 end

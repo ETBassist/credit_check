@@ -1,11 +1,14 @@
 class CreditCard
-  attr_accessor :number, :card_limit, :valid, :temp_array
-
+  attr_accessor :number, :card_limit, :valid, :temp_array, :checksum, :sum_of_digits
+# Need to create some intermediary arrays/attributes to hold things so that
+# current attributes aren't permanently altered when calculating validity
   def initialize(number, card_limit)
     @number = number
     @card_limit = card_limit
     @valid = false
     @temp_array = []
+    @checksum = 0
+    @sum_of_digits = 0
   end
 
   def card_number
@@ -23,10 +26,18 @@ class CreditCard
   def is_valid?
     counter = 0
     @number.split('').each do |num|
-      if counter.even?
-        @temp_array << num.to_i * 2
+      if @number.length.even?
+        if counter.even?
+          @temp_array << num.to_i * 2
+        else
+          @temp_array << num.to_i
+        end
       else
-        @temp_array << num.to_i
+        if counter.odd?
+          @temp_array << num.to_i * 2
+        else
+          @temp_array << num.to_i
+        end
       end
       counter += 1
     end
@@ -37,9 +48,12 @@ class CreditCard
         num
       end
     end
-    @temp_array = @temp_array.sum
-    @valid = true if @temp_array % 10 == 0
+    @sum_of_digits = @temp_array.sum
+    @valid = true if @sum_of_digits % 10 == 0
     return @valid
   end
 
+  def calculate_checksum
+    @checksum = @number.split('').last.to_i
+  end
 end
